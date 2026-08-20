@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler: [gcc, clang]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Clean workspace
+        run: make clean
+
+      - name: Build, test, sanitize, and verify guarded lab
+        run: make CC=${{ matrix.compiler }} test sanitize secure_app lab-check

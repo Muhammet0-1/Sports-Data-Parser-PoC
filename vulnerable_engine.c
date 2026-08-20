@@ -1,50 +1,34 @@
 /*
- * SportsData Stats Parser Engine (VULNERABLE VERSION)
- * Author: LordMs
- * Status: DEPRECATED - DO NOT USE IN PRODUCTION
+ * Deliberately unsafe local training example.
  *
- * Zafiyet Analizi:
- * Bu kod, oyuncu isimlerini işlerken sınır kontrolü (bounds check) yapmaz.
- * 64 byte'tan uzun bir veri girildiğinde 'admin_rights' değişkeni üzerine yazılabilir.
+ * Direct compilation is blocked. The Makefile enables this source only with
+ * AddressSanitizer and UndefinedBehaviorSanitizer so the overflow is detected
+ * instead of being presented as an exploitation primitive.
  */
 
+#ifndef SPORTSDATA_ENABLE_UNSAFE_LAB
+#error "Use `make lab`; direct compilation of the unsafe example is intentionally blocked."
+#endif
+
 #include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
 
-typedef struct {
-    char player_name[64];
-    int is_admin;  // Hafızada player_name'den hemen sonra gelir
-    int career_points;
-} UserContext;
+static void demonstrate_unsafe_copy(const char *input) {
+    volatile char player_name[16];
+    size_t index = 0U;
 
-void process_player_stats(char *input_data) {
-    UserContext user;
-    user.is_admin = 0; // Varsayılan olarak yetkisiz
-    user.career_points = 0;
+    /* Intentionally unbounded: ASan must diagnose this sanitizer-only teaching case. */
+    do {
+        player_name[index] = input[index];
+    } while (input[index++] != '\0');
 
-    // KRİTİK HATA: strcpy sınır kontrolü yapmaz!
-    // Eğer input_data 64 karakterden uzunsa, is_admin alanına taşar.
-    strcpy(user.player_name, input_data);
-
-    printf("[INFO] İşlenen Oyuncu: %s\n", user.player_name);
-
-    if (user.is_admin != 0) {
-        printf("\n[!!!] KRİTİK: YÖNETİCİ YETKİSİ KAZANILDI! [!!!]\n");
-        printf("Hafıza manipülasyonu başarılı. Sistem ele geçirildi.\n");
-    } else {
-        printf("[INFO] Erişim Normal. Yetki yükseltme yok.\n");
-    }
+    (void)printf("unsafe parser accepted: %s\n", (const char *)player_name);
 }
 
 int main(int argc, char *argv[]) {
-    if (argc < 2) {
-        printf("Kullanım: %s <oyuncu_verisi>\n", argv[0]);
-        return 1;
+    if (argc != 2) {
+        (void)fprintf(stderr, "Usage: %s <local-training-input>\n", argv[0]);
+        return 2;
     }
-
-    printf("--- SportsData İstatistik Motoru v1.0 ---\n");
-    process_player_stats(argv[1]);
-
+    demonstrate_unsafe_copy(argv[1]);
     return 0;
 }
