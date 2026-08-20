@@ -16,6 +16,8 @@
 - Replaced the original standalone patch with a reusable parser implementation.
 - Restricted the deliberately unsafe example behind a compile-time guard and sanitizer-only
   Makefile target.
+- Expressed the sanitizer teaching case as a deliberately unbounded indexed copy so fortified
+  library calls cannot preempt the ASan diagnostic.
 
 ### Removed
 

@@ -11,12 +11,17 @@
 #endif
 
 #include <stdio.h>
-#include <string.h>
 
 static void demonstrate_unsafe_copy(const char *input) {
-    char player_name[16];
-    (void)strcpy(player_name, input); /* Intentionally unsafe: sanitizer teaching case. */
-    (void)printf("unsafe parser accepted: %s\n", player_name);
+    volatile char player_name[16];
+    size_t index = 0U;
+
+    /* Intentionally unbounded: ASan must diagnose this sanitizer-only teaching case. */
+    do {
+        player_name[index] = input[index];
+    } while (input[index++] != '\0');
+
+    (void)printf("unsafe parser accepted: %s\n", (const char *)player_name);
 }
 
 int main(int argc, char *argv[]) {

@@ -38,8 +38,8 @@ Komut satırından verilen basit bir sporcu kaydını doğrular ve normalize edi
 - girdi sınırlarını derlemeden önce değil çalışma zamanında doğrular;
 - hata durumunda gerekçe ve kararlı bir çıkış kodu döndürür.
 
-`vulnerable_engine.c` kasıtlı bir `strcpy()` hatası içerir, fakat doğrudan derleme compile-time
-guard ile engellenir. Makefile bu örneği yalnızca ASan/UBSan etkin şekilde derler. Eski
+`vulnerable_engine.c` kasıtlı bir sınırsız indeksli kopyalama hatası içerir, fakat doğrudan derleme
+compile-time guard ile engellenir. Makefile bu örneği yalnızca ASan/UBSan etkin şekilde derler. Eski
 `-fno-stack-protector` ve executable-stack seçenekleri kaldırılmıştır.
 
 ## Gereksinimler
